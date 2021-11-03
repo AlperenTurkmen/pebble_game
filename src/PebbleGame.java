@@ -1,16 +1,16 @@
 import java.util.List;
+import java.util.Scanner;
 
 public class PebbleGame {
+    private int playerCount;
+    private WhiteBag WhiteBagA;
+    private WhiteBag WhiteBagB;
+    private WhiteBag WhiteBagC;
+    private BlackBag BlackBagX;
+    private BlackBag BlackBagY;
+    private BlackBag BlackBagZ;
 
-
-
-//
-
-
-
-
-
-    static class  Player implements Runnable{
+    static class Player implements Runnable{
         private String playerName;
         private List<Integer> hand;
         private int totalHandValue;
@@ -46,7 +46,61 @@ public class PebbleGame {
 
         }
     }
+    // Method returns the total number of users in a game as an integer
+
+    public int getPlayerCount() {
+        Scanner input = new Scanner(System.in);
+        int totalPlayers;
+        while (true) {
+            try {
+                System.out.println("Enter the number of players for this game");
+                totalPlayers = input.nextInt();
+                if (totalPlayers < 1) {
+                    throw new NumberFormatException(); // Player count cannot be 0 or a negative value
+                }
+                break;
+            }
+            catch (NumberFormatException e) { System.out.println("Number of players must be greater than 0"); }
+        }
+        return totalPlayers;
+
+
+
+    }
+    public static String fileName() {
+        String fileName;
+        int choice;
+        boolean quit = false;
+
+        System.out.println("Enter the name of your file without any extensions");
+        Scanner input = new Scanner(System.in);
+        fileName = input.nextLine();
+
+        System.out.println("Please select your file type from one of the options below");
+        System.out.println("1) Text file");
+        System.out.println("2) CSV file");
+        System.out.println("3) Exit program");
+
+        choice = input.nextInt();
+        while (!quit) {
+            switch (choice) {
+                case 1 -> {
+                    fileName = fileName.concat(".txt");
+                    return fileName;
+                }
+                case 2 -> {
+                    fileName = fileName.concat(".csv");
+                    return fileName;
+                }
+                case 3 -> quit = true;
+                default -> System.out.println("Invalid selection try again");
+            }
+        }
+        return fileName;
+
+    }
     public static void main(String[] args){
+
 
     }
 }
