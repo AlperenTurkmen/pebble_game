@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 
 public class PebbleGame {
     private int playerCount;
@@ -9,6 +11,23 @@ public class PebbleGame {
     private BlackBag BlackBagX;
     private BlackBag BlackBagY;
     private BlackBag BlackBagZ;
+
+    // Initialising all bag objects
+    public PebbleGame(int playerCount, List<Integer> x, List<Integer> y, List<Integer> z ) {
+        this.playerCount = playerCount;
+        WhiteBagA = new WhiteBag("A", new ArrayList<>(BlackBagX.size()));
+        WhiteBagB = new WhiteBag("B", new ArrayList<>(BlackBagY.size()));
+        WhiteBagC = new WhiteBag("C", new ArrayList<>(BlackBagZ.size()));
+
+
+        BlackBagX = new BlackBag("X", x);
+        BlackBagY = new BlackBag("Y",y );
+        BlackBagZ = new BlackBag("Z",z);
+
+        BlackBagX.setPair(WhiteBagA);
+        BlackBagY.setPair(WhiteBagB);
+        BlackBagZ.setPair(WhiteBagC);
+    }
 
     static class Player implements Runnable{
         private String playerName;
@@ -30,7 +49,6 @@ public class PebbleGame {
         public void setPlayerName(String playerName) { this.playerName = playerName; }
 
         public List<Integer> getHand() { return hand; }
-
         public void setHand(List<Integer> hand) { this.hand = hand; }
         public int getTotalHandValue() { return totalHandValue; }
         public void setTotalHandValue(int totalHandValue) { this.totalHandValue = totalHandValue; }
@@ -41,13 +59,14 @@ public class PebbleGame {
         public boolean isWinner() { return winner; }
         public void setWinner(boolean winner) { this.winner = winner; }
 
+
+
         @Override
         public void run() {
 
         }
     }
     // Method returns the total number of users in a game as an integer
-
     public int getPlayerCount() {
         Scanner input = new Scanner(System.in);
         int totalPlayers;
