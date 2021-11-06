@@ -42,6 +42,9 @@ class BlackBag extends Bag{
     public WhiteBag getPair() { return pair; }
     public void setPair(WhiteBag pair) { this.pair = pair; }
 
+
+
+
     // Sets pebbles of black bag to the getPebbles value of the mapped Whitebag
     // Run when Blackbag is empty
     // NOT TESTED WORK IN PROGRESS

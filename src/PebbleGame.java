@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class PebbleGame {
@@ -27,6 +28,40 @@ public class PebbleGame {
         BlackBagX.setPair(WhiteBagA);
         BlackBagY.setPair(WhiteBagB);
         BlackBagZ.setPair(WhiteBagC);
+
+
+    }
+
+    // Chooses a random bag out of X, Y and Z in a thread safe manner
+
+    BlackBag chooseBag() {
+        BlackBag bag = null;
+        int number = ThreadLocalRandom.current().nextInt(0, 3);
+        switch (number) {
+            case 0 -> bag = BlackBagX;
+            case 1 -> bag = BlackBagY;
+            case 2 -> bag = BlackBagZ;
+        }
+            return bag;
+
+
+    }
+    void loadBag() {
+
+    }
+    void loadHand() {
+        BlackBag bag = chooseBag();
+
+        for (int i = 0; i < 10; i++){
+
+        }
+
+    }
+    void drawPebble() {
+
+    }
+    void discardPebble(){
+
     }
 
     static class Player implements Runnable{
