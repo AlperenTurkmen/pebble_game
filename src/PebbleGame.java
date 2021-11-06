@@ -13,6 +13,7 @@ public class PebbleGame {
     private BlackBag BlackBagY;
     private BlackBag BlackBagZ;
 
+
     // Initialising all bag objects
     public PebbleGame(int playerCount, List<Integer> x, List<Integer> y, List<Integer> z ) {
         this.playerCount = playerCount;
@@ -46,8 +47,23 @@ public class PebbleGame {
 
 
     }
-    void loadBag() {
+    void loadBag(String fileName) {
+        Scanner Scanner = new Scanner(new File(fileName));
+        int[] bag = new int[100];
+        int x = 0;
+        while (Scanner.hasNextInt()){
+            bag[x++] = Scanner.nextInt();
 
+        }
+
+
+        private Bag[3] blackBags =[BlackBagX,BlackBagY,BlackBagZ]
+
+
+        for (int i = 1:i<players*11) {
+
+
+        }
     }
     void loadHand() {
         BlackBag bag = chooseBag();
