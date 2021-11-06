@@ -21,8 +21,8 @@ public class PebbleGame {
 
 
         BlackBagX = new BlackBag("X", x);
-        BlackBagY = new BlackBag("Y",y );
-        BlackBagZ = new BlackBag("Z",z);
+        BlackBagY = new BlackBag("Y", y);
+        BlackBagZ = new BlackBag("Z", z);
 
         BlackBagX.setPair(WhiteBagA);
         BlackBagY.setPair(WhiteBagB);
