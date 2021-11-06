@@ -18,6 +18,7 @@ public class Bag {
     public void setPebbles(List<Integer> pebbles) { this.pebbles = pebbles; }
 
     public int size() { return pebbles.size(); }
+    public void append(int pebble) { pebbles.add(pebble); }
 }
 
 class WhiteBag extends Bag {
