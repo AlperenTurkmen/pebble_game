@@ -1,4 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -47,23 +50,19 @@ public class PebbleGame {
 
 
     }
-    void loadBag(String fileName) {
-        Scanner Scanner = new Scanner(new File(fileName));
-        int[] bag = new int[100];
-        int x = 0;
-        while (Scanner.hasNextInt()){
-            bag[x++] = Scanner.nextInt();
+    static void loadBag(String fileName) {
+        Scanner Scanner = null;
 
-        }
+        try {
+            Scanner = new Scanner(new File(fileName));
+            String[] pebbles = Scanner.nextLine().split(",");
+            System.out.println(Arrays.toString(pebbles));
 
-
-        private Bag[3] blackBags =[BlackBagX,BlackBagY,BlackBagZ]
+        } catch (FileNotFoundException e) { System.out.println("file not found in directory"); }
 
 
-        for (int i = 1:i<players*11) {
 
 
-        }
     }
     void loadHand() {
         BlackBag bag = chooseBag();
@@ -170,6 +169,9 @@ public class PebbleGame {
 
     }
     public static void main(String[] args){
+        String nameOfFile = fileName();
+        System.out.println(nameOfFile);
+        loadBag(nameOfFile);
 
 
     }
