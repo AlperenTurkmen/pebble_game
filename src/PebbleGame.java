@@ -20,9 +20,9 @@ public class PebbleGame {
     // Initialising all bag objects
     public PebbleGame(int playerCount, List<Integer> x, List<Integer> y, List<Integer> z ) {
         this.playerCount = playerCount;
-        WhiteBagA = new WhiteBag("A", new ArrayList<>(BlackBagX.size()));
-        WhiteBagB = new WhiteBag("B", new ArrayList<>(BlackBagY.size()));
-        WhiteBagC = new WhiteBag("C", new ArrayList<>(BlackBagZ.size()));
+        WhiteBagA = new WhiteBag("A", new ArrayList<>());
+        WhiteBagB = new WhiteBag("B", new ArrayList<>());
+        WhiteBagC = new WhiteBag("C", new ArrayList<>());
 
 
         BlackBagX = new BlackBag("X", x);
@@ -52,42 +52,38 @@ public class PebbleGame {
 
 
     }
-    static void loadBag(String fileName, int playerCount) {
+    static List<Integer> loadBag(String fileName, int playerCount) {
         Scanner Scanner = null;
         boolean enoughPebbles = false;
+        List<Integer> bag = null;
+
 
         try {
             Scanner = new Scanner(new File(fileName));
             String[] pebbles = Scanner.nextLine().split(",");
-            System.out.println(Arrays.toString(pebbles));
             ArrayList<Integer> pebblesTrimmed = new ArrayList<Integer>();
             for (String p: pebbles) {
                 pebblesTrimmed.add(Integer.parseInt(p.trim()));
 
             }
-            System.out.println(pebblesTrimmed);
-            BlackBag[] bags = new BlackBag[3];
-            bags[0] = BlackBagX;
-            bags[1] = BlackBagY;
-            bags[2] = BlackBagZ;
+
+            bag = new ArrayList<Integer>();
             do {
                 int number = ThreadLocalRandom.current().nextInt(0, 100);
-                chooseBag().append(number);
-                if (BlackBagX.size() < 11*playerCount && BlackBagY.size() < 11*playerCount && BlackBagZ.size() < 11*playerCount ) {
+                bag.add(number);
+                if (bag.size() >= 11*playerCount) {
                     enoughPebbles = true;
 
                 }
 
 
             } while (!enoughPebbles);
+            return bag;
 
         } catch (FileNotFoundException e) { System.out.println("file not found in directory"); }
 
 
-
-
-
-
+        return bag;
     }
     void loadHand() {
         BlackBag bag = chooseBag();
@@ -197,9 +193,16 @@ public class PebbleGame {
 
         int playerNumber = getPlayerCount();
         String nameOfFile = fileName();
-        System.out.println(nameOfFile);
+
         loadBag(nameOfFile, playerNumber);
 
+        PebbleGame game = new PebbleGame(playerNumber, loadBag(nameOfFile, playerNumber), loadBag(nameOfFile, playerNumber),loadBag(nameOfFile, playerNumber));
+        System.out.println("Contents of bag X:" + BlackBagX.getPebbles());
+        System.out.println("Contents of bag Y:" + BlackBagY.getPebbles());
+        System.out.println("Contents of bag Z:" + BlackBagZ.getPebbles());
+        System.out.println("Number of pebbles in bag X:" + BlackBagX.size());
+        System.out.println("Number of pebbles in bag Y:" + BlackBagX.size());
+        System.out.println("Number of pebbles in bag Z:" + BlackBagX.size());
 
     }
 }
