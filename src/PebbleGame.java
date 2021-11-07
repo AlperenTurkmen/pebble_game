@@ -15,11 +15,15 @@ public class PebbleGame {
     private static BlackBag BlackBagX;
     private static BlackBag BlackBagY;
     private static BlackBag BlackBagZ;
+    private static Player[] players;
 
 
     // Initialising all bag objects
     public PebbleGame(int playerCount, List<Integer> x, List<Integer> y, List<Integer> z ) {
         this.playerCount = playerCount;
+
+        players = new Player[playerCount-1];
+
         WhiteBagA = new WhiteBag("A", new ArrayList<>());
         WhiteBagB = new WhiteBag("B", new ArrayList<>());
         WhiteBagC = new WhiteBag("C", new ArrayList<>());
@@ -85,14 +89,7 @@ public class PebbleGame {
         // returns an arraylist called bag
         return bag;
     }
-    void loadHand() {
-        BlackBag bag = chooseBag();
 
-        for (int i = 0; i < 10; i++){
-
-        }
-
-    }
     void drawPebble() {
 
     }
@@ -101,39 +98,69 @@ public class PebbleGame {
     }
 
     static class Player implements Runnable{
+        private int playerNumber;
         private String playerName;
         private List<Integer> hand;
         private int totalHandValue;
         private boolean winner;
-        private boolean yourTurn;
-        //
 
-        public Player(String playerName, List<Integer> hand, int totalHandValue, boolean winner, boolean yourTurn) {
+
+
+
+        public Player(int playerNumber, String playerName, List<Integer> hand, int totalHandValue, boolean winner) {
+            this.playerNumber = playerNumber;
             this.playerName = playerName;
             this.hand = hand;
             this.totalHandValue = totalHandValue;
             this.winner = winner;
-            this.yourTurn = yourTurn;
         }
+
+        public int getPlayerNumber() { return playerNumber; }
+        public void setPlayerNumber(int playerNumber) { this.playerNumber = playerNumber; }
 
         public String getPlayerName() { return playerName; }
         public void setPlayerName(String playerName) { this.playerName = playerName; }
 
         public List<Integer> getHand() { return hand; }
         public void setHand(List<Integer> hand) { this.hand = hand; }
+
         public int getTotalHandValue() { return totalHandValue; }
         public void setTotalHandValue(int totalHandValue) { this.totalHandValue = totalHandValue; }
 
-        public boolean isYourTurn() { return yourTurn; }
-        public void setYourTurn(boolean yourTurn) { this.yourTurn = yourTurn; }
+
 
         public boolean isWinner() { return winner; }
         public void setWinner(boolean winner) { this.winner = winner; }
+
+        // Loads hand of players at turn 1 with 10 pebbles each drawn at random from the three bags
+        List<Integer> loadHand() {
+            BlackBag bag = chooseBag();
+            int drawnPebble;
+            for (int i = 0; i < 10; i++){
+                // Using keyword synchronised to ensure atomicity in drawing and remove pebbles from a bag
+                synchronized(bag) {
+                    // Chooses the position of a pebble from the list at random
+                    int index = ThreadLocalRandom.current().nextInt( 0, bag.size() );
+                    drawnPebble = bag.get(index);
+                    bag.remove(index);
+                }
+                // Adds the drawn pebble to current player's hand
+                hand.add(drawnPebble);
+                totalHandValue =+ drawnPebble;
+                System.out.println(playerName + " has drawn a " + drawnPebble + " from bag " + bag.getName());
+
+            }
+            System.out.println(playerName + "'s starting hand: " + hand);
+
+            return hand;
+
+        }
 
 
 
         @Override
         public void run() {
+
 
         }
     }
@@ -190,19 +217,26 @@ public class PebbleGame {
 
     }
     public static void main(String[] args){
-
-        int playerNumber = getPlayerCount();
+        Scanner Scanner = new Scanner(System.in);
+        String playerName;
+        int totalPlayers = getPlayerCount();
         String nameOfFile = fileName();
 
-        loadBag(nameOfFile, playerNumber);
+        loadBag(nameOfFile, totalPlayers);
+        Player players[] = new Player[totalPlayers-1];
 
-        PebbleGame game = new PebbleGame(playerNumber, loadBag(nameOfFile, playerNumber), loadBag(nameOfFile, playerNumber),loadBag(nameOfFile, playerNumber));
+        PebbleGame game = new PebbleGame(totalPlayers, loadBag(nameOfFile, totalPlayers), loadBag(nameOfFile, totalPlayers),loadBag(nameOfFile, totalPlayers));
         System.out.println("Contents of bag X:" + BlackBagX.getPebbles());
         System.out.println("Contents of bag Y:" + BlackBagY.getPebbles());
         System.out.println("Contents of bag Z:" + BlackBagZ.getPebbles());
         System.out.println("Number of pebbles in bag X:" + BlackBagX.size());
         System.out.println("Number of pebbles in bag Y:" + BlackBagX.size());
         System.out.println("Number of pebbles in bag Z:" + BlackBagX.size());
+
+
+
+
+
 
     }
 }

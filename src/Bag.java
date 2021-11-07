@@ -19,6 +19,9 @@ public class Bag {
 
     public int size() { return pebbles.size(); }
     public void append(int pebble) { pebbles.add(pebble); }
+
+    public void remove(int index) { pebbles.remove(index); }
+    public int get(int index) { return pebbles.get(index); }
 }
 
 class WhiteBag extends Bag {
