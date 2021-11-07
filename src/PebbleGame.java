@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -83,36 +83,28 @@ public class PebbleGame {
             } while (!enoughPebbles);
 
 
-        // if file is not found in project directory an exception is thrown
-        } catch (FileNotFoundException e) { System.out.println("file not found in directory"); }
+            // if file is not found in project directory an exception is thrown
+        } catch (FileNotFoundException e) { System.out.println("file not found in directory"); return null;}
 
         // returns an arraylist called bag
         return bag;
     }
 
-    void drawPebble() {
-
-    }
-    void discardPebble(){
-
-    }
 
     static class Player implements Runnable{
         private int playerNumber;
         private String playerName;
-        private List<Integer> hand;
+        private ArrayList<Integer> hand;
         private int totalHandValue;
         private boolean winner;
 
 
 
 
-        public Player(int playerNumber, String playerName, List<Integer> hand, int totalHandValue, boolean winner) {
+        public Player(int playerNumber, String playerName) {
             this.playerNumber = playerNumber;
             this.playerName = playerName;
-            this.hand = hand;
-            this.totalHandValue = totalHandValue;
-            this.winner = winner;
+
         }
 
         public int getPlayerNumber() { return playerNumber; }
@@ -120,12 +112,9 @@ public class PebbleGame {
 
         public String getPlayerName() { return playerName; }
         public void setPlayerName(String playerName) { this.playerName = playerName; }
-
         public List<Integer> getHand() { return hand; }
-        public void setHand(List<Integer> hand) { this.hand = hand; }
+        public void setHand(ArrayList<Integer> hand) { this.hand = hand; }
 
-        public int getTotalHandValue() { return totalHandValue; }
-        public void setTotalHandValue(int totalHandValue) { this.totalHandValue = totalHandValue; }
 
 
 
@@ -155,11 +144,23 @@ public class PebbleGame {
             return hand;
 
         }
+        void drawPebble() {
+
+        }
+        void discardPebble(){
+
+        }
+
+        void checkHand() {
+
+        }
 
 
 
         @Override
         public void run() {
+            loadHand();
+
 
 
         }
@@ -178,6 +179,7 @@ public class PebbleGame {
                 break;
             }
             catch (NumberFormatException e) { System.out.println("Number of players must be greater than 0"); }
+            catch (InputMismatchException e) { System.out.println("Enter a valid number"); }
         }
         return totalPlayers;
 
@@ -221,11 +223,11 @@ public class PebbleGame {
         String playerName;
         int totalPlayers = getPlayerCount();
         String nameOfFile = fileName();
-
-        loadBag(nameOfFile, totalPlayers);
-        Player players[] = new Player[totalPlayers-1];
-
         PebbleGame game = new PebbleGame(totalPlayers, loadBag(nameOfFile, totalPlayers), loadBag(nameOfFile, totalPlayers),loadBag(nameOfFile, totalPlayers));
+
+
+
+
         System.out.println("Contents of bag X:" + BlackBagX.getPebbles());
         System.out.println("Contents of bag Y:" + BlackBagY.getPebbles());
         System.out.println("Contents of bag Z:" + BlackBagZ.getPebbles());
@@ -233,7 +235,8 @@ public class PebbleGame {
         System.out.println("Number of pebbles in bag Y:" + BlackBagX.size());
         System.out.println("Number of pebbles in bag Z:" + BlackBagX.size());
 
-
+        Thread t1 = new Thread(new Player(1,"Bob"));
+        t1.start();
 
 
 
