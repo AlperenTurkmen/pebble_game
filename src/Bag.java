@@ -49,11 +49,9 @@ class BlackBag extends Bag{
 
 
 
-    // Sets pebbles of black bag to the getPebbles value of the mapped Whitebag
-    // Run when Blackbag is empty
-    // NOT TESTED WORK IN PROGRESS
 
     public void transferPebbles() {
-       setPebbles(getPair().getPebbles());
+        setPebbles(getPair().getPebbles());
+        getPair().getPebbles().clear();
     }
 }
