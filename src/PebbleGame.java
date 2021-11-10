@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-
-
 public class PebbleGame {
     private int playerCount;
     private WhiteBag WhiteBagA;
@@ -28,24 +26,23 @@ public class PebbleGame {
             players[i] = new Player(i+1);
         }
 
+        // Initialising whitebags A, B, and C as objects
         WhiteBagA = new WhiteBag("A", new ArrayList<>());
         WhiteBagB = new WhiteBag("B", new ArrayList<>());
         WhiteBagC = new WhiteBag("C", new ArrayList<>());
 
-
+        // Initialising blackbags X, Y, and Z as objects
         BlackBagX = new BlackBag("X", x);
         BlackBagY = new BlackBag("Y", y);
         BlackBagZ = new BlackBag("Z", z);
 
+        // Pairing each blackbag to whitebag
         BlackBagX.setPair(WhiteBagA);
         BlackBagY.setPair(WhiteBagB);
         BlackBagZ.setPair(WhiteBagC);
-
-
     }
 
     // Chooses a random bag out of X, Y and Z in a thread safe manner
-
     static BlackBag chooseBag() {
         BlackBag bag = null;
         int number = ThreadLocalRandom.current().nextInt(0, 3);
@@ -55,9 +52,9 @@ public class PebbleGame {
             case 2 -> bag = BlackBagZ;
         }
         return bag;
-
-
     }
+
+    // Loads a bag with pebbles from the specified file until bag has 11x pebbles where x is the number of players
     static ArrayList<Integer> loadBag(String fileName, int playerCount) {
         Scanner Scanner = null;
         boolean enoughPebbles = false;
@@ -71,7 +68,6 @@ public class PebbleGame {
             ArrayList<Integer> pebblesTrimmed = new ArrayList<Integer>();
             for (String p: pebbles) {
                 pebblesTrimmed.add(Integer.parseInt(p.trim()));
-
             }
             // Loops until the arraylist is of length 11 x the number of players
             do {
@@ -80,18 +76,14 @@ public class PebbleGame {
                 if (bag.size() >= 11*playerCount) {
                     enoughPebbles = true;
                 }
-
-
             } while (!enoughPebbles);
 
-
-            // if file is not found in project directory an exception is thrown
+        // if file is not found in project directory an exception is thrown
         } catch (FileNotFoundException e) { System.out.println("file not found in directory"); return null;}
 
         // returns an arraylist called bag
         return bag;
     }
-
 
     static class Player implements Runnable{
         private int playerNumber;
@@ -100,15 +92,10 @@ public class PebbleGame {
         private boolean winner;
         private WhiteBag PairedBag;
 
-
-
-
         public Player(int playerNumber) {
             this.playerNumber = playerNumber;
             hand = new ArrayList<Integer>();
             winner = false;
-
-
         }
 
         public int getPlayerNumber() { return playerNumber; }
@@ -116,11 +103,6 @@ public class PebbleGame {
 
         public List<Integer> getHand() { return hand; }
         public void setHand(ArrayList<Integer> hand) { this.hand = hand; }
-
-
-
-
-
 
         public boolean isWinner() { return winner; }
         public void setWinner(boolean winner) { this.winner = winner; }
@@ -130,7 +112,8 @@ public class PebbleGame {
             BlackBag bag = chooseBag();
             int drawnPebble;
             for (int i = 0; i < 10; i++){
-                // Using keyword synchronised to ensure atomicity in drawing and remove pebbles from a bag
+                // prevents other threads from using this method
+                // whilst a thread is executing this method
                 synchronized(bag) {
                     // Chooses the position of a pebble from the list at random
                     int index = ThreadLocalRandom.current().nextInt( 0, bag.size() );
@@ -140,9 +123,8 @@ public class PebbleGame {
                     hand.add(drawnPebble);
                     totalHandValue += drawnPebble;
                 }
-
-
             }
+
             System.out.println("Player " + getPlayerNumber() + "'s starting hand: " + hand);
             System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
             checkHand();
@@ -151,6 +133,7 @@ public class PebbleGame {
             return hand;
 
         }
+        // draws a pebble from a random bag
         void drawPebble() {
             BlackBag bag = null;
             int drawnPebble;
@@ -159,7 +142,8 @@ public class PebbleGame {
             while (bag == null) {
                 bag = chooseBag();
             }
-
+            // prevents other threads from using this method
+            // whilst a thread is executing this method
             synchronized (bag){
                 // Chooses the position of a pebble from the list at random
                 int index = ThreadLocalRandom.current().nextInt( 0, bag.size());
@@ -173,6 +157,7 @@ public class PebbleGame {
                 System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
                 checkHand();
             }
+
             // Transfer pebbles from paired white bag if bag is empty
             if (bag.size() == 0) {
                 bag.transferPebbles();
@@ -193,16 +178,15 @@ public class PebbleGame {
                 System.out.println("An error occurred");
             }
 
-
-
-
-
-
         }
+
+        // Discards a pebble to the corresponding paired white bag
         void discardPebble(){
             int index = ThreadLocalRandom.current().nextInt( 0, hand.size() );
             int drawnPebble = hand.get(index);
 
+            // prevents other threads from using this method
+            // whilst a thread is executing this method
             synchronized (PairedBag) {
                 hand.remove(index);
                 totalHandValue -= drawnPebble;
@@ -212,7 +196,6 @@ public class PebbleGame {
                 System.out.println("Player " + getPlayerNumber() + "'s current hand: " + hand);
                 System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
                 checkHand();
-
             }
 
             // File handling
@@ -228,32 +211,22 @@ public class PebbleGame {
             }
 
         }
-
         void checkHand() {
             if (totalHandValue == 100 && !winner) {
                 setWinner(true);
                 System.out.println("Player " + getPlayerNumber() + " has a winning hand!");
-
             }
-
         }
-
-
-
         @Override
         public void run() {
             loadHand();
             while (!isWinner()) {
                 discardPebble();
                 drawPebble();
-
             }
-
-
-
-
         }
     }
+
     // Method returns the total number of users in a game as an integer
     public static int getPlayerCount() {
         Scanner input = new Scanner(System.in);
@@ -271,8 +244,6 @@ public class PebbleGame {
 
         }
         return totalPlayers;
-
-
 
     }
     public static String fileName() {
@@ -308,7 +279,6 @@ public class PebbleGame {
 
     }
     public static void main(String[] args){
-
         Scanner Scanner = new Scanner(System.in);
 
         int totalPlayers = getPlayerCount();
@@ -322,7 +292,6 @@ public class PebbleGame {
             if (file.exists()){
                 file.delete();
             }
-
         }
         ExecutorService service = Executors.newFixedThreadPool(totalPlayers);
         for (Player p : players) {
@@ -331,16 +300,8 @@ public class PebbleGame {
             if (p.isWinner()) {
                 service.shutdownNow();
             }
-
         }
         service.shutdown();
-
-
-
-
-
-
-
 
     }
 }
