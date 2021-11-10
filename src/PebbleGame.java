@@ -75,7 +75,7 @@ public class PebbleGame {
             }
             // Loops until the arraylist is of length 11 x the number of players
             do {
-                int number = ThreadLocalRandom.current().nextInt(1, 20);
+                int number = ThreadLocalRandom.current().nextInt(1, pebblesTrimmed.size());
                 bag.add(number);
                 if (bag.size() >= 11*playerCount) {
                     enoughPebbles = true;
