@@ -315,10 +315,15 @@ public class PebbleGame {
         String nameOfFile = fileName();
         PebbleGame game = new PebbleGame(totalPlayers, loadBag(nameOfFile, totalPlayers), loadBag(nameOfFile, totalPlayers),loadBag(nameOfFile, totalPlayers));
 
-        System.out.println(BlackBagX.getPebbles());
-        System.out.println(BlackBagY.getPebbles());
-        System.out.println(BlackBagZ.getPebbles());
+        // Deletes previous files from previous simulations
+        for (int i = 0; i < totalPlayers; i++) {
+            String filePath = "player" + i+1 + "_output.txt";
+            File file = new File(filePath);
+            if (file.exists()){
+                file.delete();
+            }
 
+        }
         ExecutorService service = Executors.newFixedThreadPool(totalPlayers);
         for (Player p : players) {
             service.submit(new Thread(p));
