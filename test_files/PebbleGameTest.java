@@ -1,27 +1,26 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class PebbleGameTest {
+class PebbleGameTest {
 
     @Test
-    public void testChooseBag() {
-
+    void chooseBag() {
     }
 
     @Test
-    public void testLoadBag() {
+    void loadBag() {
     }
 
     @Test
-    public void testGetPlayerCount() {
+    void getPlayerCount() {
     }
 
     @Test
-    public void testFileName() {
+    void fileName() {
     }
 
     @Test
-    public void testMain() {
+    void main() {
     }
 }

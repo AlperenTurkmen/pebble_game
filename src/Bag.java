@@ -28,10 +28,6 @@ class WhiteBag extends Bag {
         super(name, pebbles);
     }
 
-    // Sets the value of white bag to 0 when all the stored pebbles are transferred to the mapped black bag
-    public void resetPebbles(){
-        this.getPebbles().clear();
-    }
 }
 
 class BlackBag extends Bag{

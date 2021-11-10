@@ -295,13 +295,15 @@ public class PebbleGame {
         }
         ExecutorService service = Executors.newFixedThreadPool(totalPlayers);
         for (Player p : players) {
-            service.submit(new Thread(p));
+            service.execute(new Thread(p));
+
             // Forces threads to shut down when a winning hand exists
             if (p.isWinner()) {
                 service.shutdownNow();
             }
         }
         service.shutdown();
+
 
     }
 }
