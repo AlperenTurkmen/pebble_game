@@ -1,12 +1,11 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.*;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+
 
 
 public class PebbleGame {
@@ -24,7 +23,10 @@ public class PebbleGame {
     public PebbleGame(int playerCount, List<Integer> x, List<Integer> y, List<Integer> z ) {
         this.playerCount = playerCount;
 
-        players = new Player[playerCount-1];
+        players = new Player[playerCount];
+        for (int i = 0; i < playerCount; i++) {
+            players[i] = new Player(i+1);
+        }
 
         WhiteBagA = new WhiteBag("A", new ArrayList<>());
         WhiteBagB = new WhiteBag("B", new ArrayList<>());
@@ -73,7 +75,7 @@ public class PebbleGame {
             }
             // Loops until the arraylist is of length 11 x the number of players
             do {
-                int number = ThreadLocalRandom.current().nextInt(0, 100);
+                int number = ThreadLocalRandom.current().nextInt(1, 20);
                 bag.add(number);
                 if (bag.size() >= 11*playerCount) {
                     enoughPebbles = true;
@@ -93,7 +95,6 @@ public class PebbleGame {
 
     static class Player implements Runnable{
         private int playerNumber;
-        private String playerName;
         private ArrayList<Integer> hand;
         private int totalHandValue;
         private boolean winner;
@@ -102,9 +103,8 @@ public class PebbleGame {
 
 
 
-        public Player(int playerNumber, String playerName) {
+        public Player(int playerNumber) {
             this.playerNumber = playerNumber;
-            this.playerName = playerName;
             hand = new ArrayList<Integer>();
             winner = false;
 
@@ -114,8 +114,6 @@ public class PebbleGame {
         public int getPlayerNumber() { return playerNumber; }
         public void setPlayerNumber(int playerNumber) { this.playerNumber = playerNumber; }
 
-        public String getPlayerName() { return playerName; }
-        public void setPlayerName(String playerName) { this.playerName = playerName; }
         public List<Integer> getHand() { return hand; }
         public void setHand(ArrayList<Integer> hand) { this.hand = hand; }
 
@@ -145,8 +143,8 @@ public class PebbleGame {
 
 
             }
-            System.out.println(playerName + "'s starting hand: " + hand);
-            System.out.println(playerName + "'s hand value: " + totalHandValue);
+            System.out.println("Player " + getPlayerNumber() + "'s starting hand: " + hand);
+            System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
             checkHand();
 
             PairedBag = bag.getPair();
@@ -154,30 +152,51 @@ public class PebbleGame {
 
         }
         void drawPebble() {
-            BlackBag bag = chooseBag();
+            BlackBag bag = null;
             int drawnPebble;
 
-            //Transfers pebbles from mapped whitebag to the corresponding blackbag when blackbag is empty
-            if (bag.size() == 0){
+            // Loads a bag from choose bag function when bag object is empty
+            while (bag == null) {
+                bag = chooseBag();
+            }
+
+            synchronized (bag){
+                // Chooses the position of a pebble from the list at random
+                int index = ThreadLocalRandom.current().nextInt( 0, bag.size());
+                drawnPebble = bag.get(index);
+                hand.add(drawnPebble);
+                totalHandValue += drawnPebble;
+                bag.remove(index);
+
+                System.out.println("Player " + getPlayerNumber() + " has drawn a " + drawnPebble + " from Bag " + bag.getName());
+                System.out.println("Player " + getPlayerNumber() + "'s current hand: " + hand);
+                System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
+                checkHand();
+            }
+            // Transfer pebbles from paired white bag if bag is empty
+            if (bag.size() == 0) {
                 bag.transferPebbles();
-            }
-            else {
-                synchronized (bag){
-                    // Chooses the position of a pebble from the list at random
-                    int index = ThreadLocalRandom.current().nextInt( 0, bag.size() );
-                    drawnPebble = bag.get(index);
-                    hand.add(drawnPebble);
-                    totalHandValue += drawnPebble;
-                    bag.remove(index);
 
-                    System.out.println(playerName + " has drawn a " + drawnPebble + " from Bag " + bag.getName());
-                    System.out.println(playerName + "'s current hand: " + hand);
-                    System.out.println(playerName + "'s hand value: " + totalHandValue);
-                    checkHand();
-                }
             }
-
             PairedBag = bag.getPair();
+
+            // File handling
+            String filename = "player" + getPlayerNumber() + "_output.txt";
+
+            try(FileWriter fw = new FileWriter(filename, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter pw = new PrintWriter(bw))
+            {
+                pw.println("Player " + getPlayerNumber() + " has drawn a " + drawnPebble + " from Bag " + bag.getName());
+                pw.println("Player " + getPlayerNumber() + "'s current hand: " + hand);
+            } catch (IOException e) {
+                System.out.println("An error occurred");
+            }
+
+
+
+
+
 
         }
         void discardPebble(){
@@ -189,18 +208,32 @@ public class PebbleGame {
                 totalHandValue -= drawnPebble;
                 PairedBag.append(drawnPebble);
 
-                System.out.println(playerName + " has discard pebble of value " + drawnPebble + " to Bag " + PairedBag.getName());
-                System.out.println(playerName + "'s current hand: " + hand);
-                System.out.println(playerName + "'s hand value: " + totalHandValue);
+                System.out.println("Player " + getPlayerNumber() + " has discard pebble of value " + drawnPebble + " to Bag " + PairedBag.getName());
+                System.out.println("Player " + getPlayerNumber() + "'s current hand: " + hand);
+                System.out.println("Player " + getPlayerNumber() + "'s hand value: " + totalHandValue);
                 checkHand();
 
             }
+
+            // File handling
+            String filename = "player" + getPlayerNumber() + "_output.txt";
+            try(FileWriter fw = new FileWriter(filename, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter pw = new PrintWriter(bw))
+            {
+                pw.println("Player " + getPlayerNumber() + " has discard pebble of value " + drawnPebble + " to Bag " + PairedBag.getName());
+                pw.println("Player " + getPlayerNumber() + "'s current hand: " + hand);
+            } catch (IOException e) {
+                System.out.println("An error occurred");
+            }
+
         }
 
         void checkHand() {
             if (totalHandValue == 100 && !winner) {
-                winner = true;
-                System.out.println(playerName + " has a winning hand!");
+                setWinner(true);
+                System.out.println("Player " + getPlayerNumber() + " has a winning hand!");
+
             }
 
         }
@@ -210,11 +243,12 @@ public class PebbleGame {
         @Override
         public void run() {
             loadHand();
-            while (!winner) {
+            while (!isWinner()) {
                 discardPebble();
                 drawPebble();
 
             }
+
 
 
 
@@ -274,30 +308,31 @@ public class PebbleGame {
 
     }
     public static void main(String[] args){
-        long start = System.currentTimeMillis();
+
         Scanner Scanner = new Scanner(System.in);
-        String playerName;
+
         int totalPlayers = getPlayerCount();
         String nameOfFile = fileName();
         PebbleGame game = new PebbleGame(totalPlayers, loadBag(nameOfFile, totalPlayers), loadBag(nameOfFile, totalPlayers),loadBag(nameOfFile, totalPlayers));
 
+        System.out.println(BlackBagX.getPebbles());
+        System.out.println(BlackBagY.getPebbles());
+        System.out.println(BlackBagZ.getPebbles());
+
+        ExecutorService service = Executors.newFixedThreadPool(totalPlayers);
+        for (Player p : players) {
+            service.submit(new Thread(p));
+            // Forces threads to shut down when a winning hand exists
+            if (p.isWinner()) {
+                service.shutdownNow();
+            }
+
+        }
+        service.shutdown();
 
 
 
-        System.out.println("Contents of bag X:" + BlackBagX.getPebbles());
-        System.out.println("Contents of bag Y:" + BlackBagY.getPebbles());
-        System.out.println("Contents of bag Z:" + BlackBagZ.getPebbles());
-        System.out.println("Number of pebbles in bag X:" + BlackBagX.size());
-        System.out.println("Number of pebbles in bag Y:" + BlackBagX.size());
-        System.out.println("Number of pebbles in bag Z:" + BlackBagX.size());
 
-        Thread t1 = new Thread(new Player(1,"Bob"));
-        t1.start();
-
-        long end = System.currentTimeMillis();
-
-        NumberFormat formatter = new DecimalFormat("#0.00000");
-        System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
 
 
 
