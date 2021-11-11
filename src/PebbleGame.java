@@ -58,7 +58,7 @@ public class PebbleGame {
     static ArrayList<Integer> loadBag(String fileName, int playerCount) {
         Scanner Scanner = null;
         boolean enoughPebbles = false;
-        ArrayList<Integer> bag = new ArrayList<Integer>();
+        ArrayList<Integer> bag = new ArrayList<>();
 
         // Tries to read data from file into a string array
         // Data from string array is parsed into an integer arraylist to remove whitespaces
@@ -72,14 +72,23 @@ public class PebbleGame {
             // Loops until the arraylist is of length 11 x the number of players
             do {
                 int number = ThreadLocalRandom.current().nextInt(1, pebblesTrimmed.size());
-                bag.add(number);
+
                 if (bag.size() >= 11*playerCount) {
                     enoughPebbles = true;
                 }
+
+                // Checks if weight of pebble is greater than zero
+                if (number > 0){
+                    bag.add(number);
+                }
+                else {
+                    // Thrown when weight of pebble is less than 1 or not an integer
+                    throw new NumberFormatException();
+                }
             } while (!enoughPebbles);
 
-        // if file is not found in project directory an exception is thrown
-        } catch (FileNotFoundException e) { System.out.println("file not found in directory"); return null;}
+            // if file is not found in project directory an exception is thrown
+        } catch (FileNotFoundException e) { System.out.println("file not found in directory");}
 
         // returns an arraylist called bag
         return bag;
@@ -139,7 +148,7 @@ public class PebbleGame {
             int drawnPebble;
 
             // Loads a bag from choose bag function when bag object is empty
-            while (bag == null) {
+            while (bag == null || bag.size() == 0) {
                 bag = chooseBag();
             }
             // prevents other threads from using this method
